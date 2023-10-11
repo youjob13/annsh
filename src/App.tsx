@@ -26,7 +26,6 @@ const timestampToSpecificTimeZoneAndFormat = (timestamp: number) => {
 
 export default function App() {
   const calendarRef = useRef<HTMLDivElement>();
-
   const [values, setValues] = useState<number[]>([]);
 
   const getDates = () => {
