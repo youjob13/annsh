@@ -30,9 +30,13 @@ export default function App() {
   const [values, setValues] = useState<number[]>([]);
 
   const getDates = () => {
-    axios.get<ISchedule[]>("/api/schedule").then(({ data }) => {
-      setValues(data.map(timestampToSpecificTimeZone));
-    });
+    axios
+      .get<ISchedule[]>(
+        "https://annushka-tg-bot-3d6cd33c9162.herokuapp.com/api/schedule"
+      )
+      .then(({ data }) => {
+        setValues(data.map(timestampToSpecificTimeZone));
+      });
   };
 
   useEffect(() => {
@@ -46,7 +50,10 @@ export default function App() {
   const updateDates = async (dates: number[]) => {
     try {
       const formattedDates = dates.map(timestampToSpecificTimeZoneAndFormat);
-      await axios.post("/api/schedule", { dates: formattedDates });
+      await axios.post(
+        "https://annushka-tg-bot-3d6cd33c9162.herokuapp.com/api/schedule",
+        { dates: formattedDates }
+      );
     } catch (error) {
       console.log("error", error);
     }

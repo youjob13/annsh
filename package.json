@@ -2,6 +2,14 @@
   "name": "annushka_admin",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://youjob13.github.io/annsh",
+  "scripts": {
+    "deploy": "gh-pages -d build",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -22,12 +30,6 @@
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
   },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
   "eslintConfig": {
     "extends": [
       "react-app",
@@ -47,6 +49,7 @@
     ]
   },
   "devDependencies": {
-    "@types/luxon": "^3.3.2"
+    "@types/luxon": "^3.3.2",
+    "gh-pages": "^6.0.0"
   }
 }
