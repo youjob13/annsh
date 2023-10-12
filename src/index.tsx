@@ -14,7 +14,7 @@ async function authenticateUser() {
     authenticateUser();
   }
 }
-authenticateUser();
+// authenticateUser();
 root.render(
   <React.StrictMode>
     <App />

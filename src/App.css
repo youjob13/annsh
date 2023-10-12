@@ -3,3 +3,17 @@
     color: #000;
   }
 }
+
+.customBody {
+  padding: 20px 0;
+  display: flex;
+  justify-content: space-around;
+}
+
+@media (max-width: 1024px) {
+  .customBody {
+    flex-direction: column-reverse;
+    align-items: center;
+    row-gap: 40px;
+  }
+}
