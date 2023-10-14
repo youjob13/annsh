@@ -14,7 +14,7 @@ import {
 import dayjs from "dayjs";
 import * as DTO from "./dto";
 
-const domain = "http://localhost:4000";
+const domain = "https://annushka-tg-bot-3d6cd33c9162.herokuapp.com";
 
 export default function App() {
   // CalendarManager

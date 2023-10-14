@@ -20,7 +20,9 @@ export default function Services() {
   React.useEffect(() => {
     try {
       axios
-        .get<DTO.IService[]>("http://localhost:4000/api/services")
+        .get<DTO.IService[]>(
+          "https://annushka-tg-bot-3d6cd33c9162.herokuapp.com/api/services"
+        )
         .then(({ data }) => setServices(data));
     } catch (error) {
       console.error("error", error);
@@ -29,9 +31,12 @@ export default function Services() {
 
   const saveUpdatedServices = async () => {
     try {
-      await axios.post("http://localhost:4000/api/services", {
-        services,
-      });
+      await axios.post(
+        "https://annushka-tg-bot-3d6cd33c9162.herokuapp.com/api/services",
+        {
+          services,
+        }
+      );
     } catch (error) {
       console.error("error", error);
     }
