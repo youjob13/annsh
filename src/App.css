@@ -1,9 +1,3 @@
-.time-picker {
-  input {
-    color: #000;
-  }
-}
-
 .customBody {
   padding: 20px 0;
   display: flex;
@@ -16,4 +10,8 @@
     align-items: center;
     row-gap: 40px;
   }
+}
+
+.settings {
+  max-width: 80%;
 }

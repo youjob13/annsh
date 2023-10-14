@@ -1,11 +1,6 @@
 import { DateTime } from "luxon";
 
-export interface ISchedule {
-  uniqueId: string | null;
-  timestamp: number;
-}
-
-export const timestampToSpecificTimeZone = ({ timestamp }: ISchedule) => {
+export const timestampToSpecificTimeZone = (timestamp: number) => {
   return DateTime.fromMillis(timestamp, {
     zone: "Europe/Berlin",
   }).toMillis();

@@ -1,46 +1,35 @@
-# Getting Started with Create React App
+# Редактировать услуги
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Позволяет изменять / удалять / добавлять услуги
 
-## Available Scripts
+```bash
+id услуги это уникальный набор символов на английском языке
+```
 
-In the project directory, you can run:
+# Неподтвержденные записи
 
-### `npm start`
+Список запросов на запись, которые запросили клиенты, но ты их ещё не подтвердила
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+# Подтвержденные записи
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+Список записей, которые ты подтвердила, с информацией о клиенте, датой и т.д.
 
-### `npm test`
+`Можно отменить запись, кликнув по кнопке рядом`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+# Свободные даты
 
-### `npm run build`
+Список дат, которые ты добавила, но на них еще нет записей
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+# Добавление новых дат
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+`!!! Не забудь, что время должно быть кратно 30 минутам (к примеру 17:00, 17:30)`
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+`!!! Красным помечены даты, на которые уже есть запись! Их нельзя редактировать`
 
-### `npm run eject`
+`!!! Синим обозначены свободные даты`
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+С помощью календаря можно добавить новые даты,
+затем внизу появится список добавленных дат, где можно добавить / удалить / изменить время для конкретной даты
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+Кнопка `Сбросить изменения`, вернет записи к исходному состоянию до редактирования
+Кнопка `Сохранить изменения`, сохранит изменения в базе данных, после чего они обновяться в боте

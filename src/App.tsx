@@ -1,92 +1,161 @@
 "use client";
 
-import axios from "axios";
-import { useEffect, useRef, useState } from "react";
-import { Calendar } from "react-multi-date-picker";
-import DatePanel from "react-multi-date-picker/plugins/date_panel";
-import TimePicker from "react-multi-date-picker/plugins/time_picker";
-import { DateTime } from "luxon";
 import "./App.css";
-import BasicAccordion from "./Accordion";
+import Schedule from "./components/Schedule";
+
+import Services from "./components/Services";
+import CalendarManager from "./components/CalendarManager";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import {
-  ISchedule,
   timestampToSpecificTimeZone,
   timestampToSpecificTimeZoneAndFormat,
 } from "./utils";
+import dayjs from "dayjs";
+import * as DTO from "./dto";
+
+const domain = "http://localhost:4000";
 
 export default function App() {
-  const calendarRef = useRef<HTMLDivElement>();
-  const [values, setValues] = useState<number[]>([]);
+  // CalendarManager
+  const [dateList, setDates] = useState<number[]>([]);
+  const [groupedTimeByDateKey, setDateTimes] = useState<DTO.DateTimes>({});
+
+  const [nonAvailableDates, setNonAvailableDates] = useState<number[]>([]);
+
+  // todo: useCallback
   const getDates = () => {
-    axios
-      .get<ISchedule[]>(
-        "https://annushka-tg-bot-3d6cd33c9162.herokuapp.com/api/schedule"
-      )
-      .then(({ data }) => {
-        setValues(data.map(timestampToSpecificTimeZone));
+    axios.get<DTO.ISchedule[]>(`${domain}/api/schedule`).then(({ data }) => {
+      const dates = data.map(({ timestamp }) =>
+        timestampToSpecificTimeZone(timestamp)
+      );
+
+      setDates(dates);
+      groupTimesByDateKey(dates);
+
+      const nonAvailableDates = data
+        .filter(({ isBooked }) => isBooked === true)
+        .map(({ timestamp }) => timestamp);
+      setNonAvailableDates(nonAvailableDates);
+    });
+  };
+
+  const groupTimesByDateKey = (dates: number[]) => {
+    const groupedTimesByDateKey = dates.reduce<DTO.DateTimes>((acc, date) => {
+      const dateKey = dayjs(date).format("MM/DD/YYYY");
+
+      if (acc[dateKey] != null) {
+        acc[dateKey].push(date);
+      } else {
+        acc[dateKey] = [date];
+      }
+      return acc;
+    }, {});
+
+    setDateTimes(groupedTimesByDateKey);
+  };
+
+  const updateDates = async () => {
+    try {
+      const dateToUpdate = Object.values(groupedTimeByDateKey)
+        .flat()
+        .map(timestampToSpecificTimeZoneAndFormat);
+
+      await axios.post(`${domain}/api/schedule`, {
+        dates: dateToUpdate,
       });
+      getAvailableDates();
+    } catch (error) {
+      console.error("error", error);
+    }
   };
 
   useEffect(() => {
     try {
       getDates();
+      getAvailableDates();
+      getBookedDates();
+      getApprovedDates();
     } catch (error) {
-      console.log("error", error);
+      console.error("error", error);
     }
   }, []);
 
-  const updateDates = async (dates: number[]) => {
-    try {
-      const formattedDates = dates.map(timestampToSpecificTimeZoneAndFormat);
-      await axios.post(
-        "https://annushka-tg-bot-3d6cd33c9162.herokuapp.com/api/schedule",
-        {
-          dates: formattedDates,
-        }
-      );
-    } catch (error) {
-      console.log("error", error);
-    }
+  // Schedule
+  const [availableDates, setAvailableDates] = useState<number[]>([]);
+  const [approvedRequests, setApprovedRequests] = useState<DTO.IRequest[]>([]);
+  const [bookedRequests, setBookedRequests] = useState<DTO.IRequest[]>([]);
+
+  const getAvailableDates = () => {
+    axios
+      .get<DTO.ISchedule["timestamp"][]>(`${domain}/api/schedule/available`)
+      .then(({ data }) => {
+        setAvailableDates(
+          data.map((timestamp) => timestampToSpecificTimeZone(timestamp))
+        );
+      });
   };
 
-  const reset = async () => {
+  const getBookedDates = () => {
+    axios
+      .get<DTO.IRequest[]>(`${domain}/api/schedule/booked`)
+      .then(({ data }) => {
+        const bookedRequests = data.map((request) => ({
+          ...request,
+          date: timestampToSpecificTimeZone(request.date),
+        }));
+        setBookedRequests(bookedRequests);
+      });
+  };
+
+  const getApprovedDates = () => {
+    axios
+      .get<DTO.IRequest[]>(`${domain}/api/schedule/approved`)
+      .then(({ data }) => {
+        const approvedRequests = data.map((request) => ({
+          ...request,
+          date: timestampToSpecificTimeZone(request.date),
+        }));
+        setApprovedRequests(approvedRequests);
+      });
+  };
+
+  const cancelRequest = async (request: DTO.IRequest) => {
     try {
-      getDates();
+      axios
+        .put<DTO.IRequest>(`${domain}/api/request/${request.date}`)
+        .then(() => {
+          getDates();
+          getAvailableDates();
+          getBookedDates();
+          getApprovedDates();
+        });
     } catch (error) {
-      console.log("error", error);
+      console.error("error", error);
     }
   };
 
   return (
     <>
       <div className="customBody">
-        <div>
-          <Calendar
-            multiple
-            sort={true}
-            format="MM/DD/YYYY HH:mm"
-            ref={calendarRef}
-            value={values}
-            // @ts-ignore
-            onChange={setValues}
-            plugins={[
-              <DatePanel key="date-panel" />,
-              <TimePicker
-                className="time-picker"
-                key="time-picker"
-                defaultValue={"00:00"}
-                position="bottom"
-                hideSeconds={true}
-              />,
-            ]}
+        <CalendarManager
+          dateList={dateList}
+          nonAvailableDates={nonAvailableDates}
+          groupedTimeByDateKey={groupedTimeByDateKey}
+          getDates={getDates}
+          setDateTimes={setDateTimes}
+          groupTimesByDateKey={groupTimesByDateKey}
+          setDates={setDates}
+          updateDates={updateDates}
+        />
+        <div className="settings">
+          <Services />
+          <Schedule
+            cancelRequest={cancelRequest}
+            availableDates={availableDates}
+            approvedRequests={approvedRequests}
+            bookedRequests={bookedRequests}
           />
-          <button onClick={() => reset()}>Сбросить изменения</button>
-          <button onClick={() => updateDates(values)}>
-            Сохранить изменения
-          </button>
-        </div>
-        <div>
-          <BasicAccordion />
         </div>
       </div>
     </>

@@ -1,0 +1,52 @@
+.dpopup {
+  z-index: 111;
+}
+
+.calendar-manager {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  row-gap: 1rem;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 10px;
+}
+
+.specific-date {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #1976d2;
+  color: #fff;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  margin-bottom: 6px;
+}
+
+.specific-date .label {
+  display: flex;
+  flex-direction: column;
+}
+
+.change-time {
+  display: flex;
+  flex-direction: column;
+  row-gap: 6px;
+}
+
+.popup-section {
+  margin-bottom: 10px;
+}
+
+.add-icon,
+.time-picker {
+  color: #fff !important;
+}
+
+.add-icon.close {
+  font-size: 14px;
+}

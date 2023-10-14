@@ -1,0 +1,39 @@
+.service-form {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  row-gap: 1.5rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.service-list {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  row-gap: 1.5rem;
+}
+
+.new-service {
+  text-align: center;
+
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
+}
+
+.new-service-control {
+  display: flex;
+  column-gap: 5px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.new-service-input {
+  height: 2rem;
+  border: 1px solid #ccc;
+  border-radius: 0.25rem;
+  padding: 0.5rem;
+  font-size: 1rem;
+}

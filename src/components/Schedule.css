@@ -1,0 +1,22 @@
+.date-item {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  align-items: center;
+  margin-bottom: 10px;
+  column-gap: 3rem;
+  padding: 10px;
+  padding-top: 0;
+  border-bottom: 1px solid #ccc;
+}
+
+.date-item div {
+  margin: 0 !important;
+}
+
+span {
+  word-break: break-word !important;
+}
+
+.label {
+  font-weight: 600;
+}
