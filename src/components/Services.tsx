@@ -61,7 +61,7 @@ export default function Services() {
   };
 
   return (
-    <div>
+    <div className="main-wrapper">
       <Accordion>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}

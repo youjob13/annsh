@@ -8,7 +8,6 @@ import { useRef } from "react";
 import { IconButton } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { Calendar } from "react-multi-date-picker";
-import DatePanel from "react-multi-date-picker/plugins/date_panel";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -20,21 +19,15 @@ import * as DTO from "../dto";
 import dayjs from "dayjs";
 
 export default function CalendarManager({
-  dateList,
-  nonAvailableDates,
   groupedTimeByDateKey,
   getDates,
-  setDates,
   setDateTimes,
   groupTimesByDateKey,
   updateDates,
 }: {
-  dateList: number[];
-  nonAvailableDates: number[];
   groupedTimeByDateKey: DTO.DateTimes;
   getDates: () => void;
-  groupTimesByDateKey: (dates: number[]) => void;
-  setDates: React.Dispatch<React.SetStateAction<number[]>>;
+  groupTimesByDateKey: (nonAvailableDates: number[], dates: number[]) => void;
   setDateTimes: React.Dispatch<React.SetStateAction<DTO.DateTimes>>;
   updateDates: () => void;
 }) {
@@ -50,8 +43,11 @@ export default function CalendarManager({
 
   const updateDateTimes = (dateKey: string, selectedTimes: number[]) => {
     setDateTimes((prev) => ({
-      ...prev,
-      [dateKey]: Array.from(new Set(selectedTimes)),
+      nonAvailableDates: prev.nonAvailableDates,
+      availableDates: {
+        ...prev.availableDates,
+        [dateKey]: Array.from(new Set(selectedTimes)),
+      },
     }));
   };
 
@@ -63,60 +59,85 @@ export default function CalendarManager({
         ref={calendarRef}
         mapDays={(day) => {
           if (
-            nonAvailableDates.some((date) =>
+            groupedTimeByDateKey.nonAvailableDates.some((date) =>
               dayjs(date).isSame(dayjs(day.date.toDate()), "day")
             )
           ) {
             return {
+              disabled: true,
               style: {
                 backgroundColor: "brown",
                 color: "white",
+                pointerEvents: "none",
               },
             };
           }
           return {};
         }}
-        value={dateList}
+        value={[
+          ...groupedTimeByDateKey.nonAvailableDates,
+          ...Object.values(groupedTimeByDateKey.availableDates).flat(),
+        ]}
         // @ts-ignore
         onChange={(dates: DateObject[]) => {
           if (dates) {
-            setDates(dates);
-            groupTimesByDateKey(dates);
+            const availableDates = dates.filter(
+              (date) => !groupedTimeByDateKey.nonAvailableDates.includes(+date)
+            );
+            groupTimesByDateKey(
+              groupedTimeByDateKey.nonAvailableDates,
+              availableDates
+            );
           }
         }}
-        plugins={[<DatePanel key="date-panel" sort="date" />]}
       />
       <ul className="dates">
-        {Object.entries(groupedTimeByDateKey).map(([dateKey, times]) => (
-          <li key={dateKey} className="specific-date">
-            <div className="label">
-              <p>{dateKey}</p>
-              {times.length === 0 ? (
-                "время не указано"
-              ) : (
-                <ul className="times">
-                  {times.map((time) => (
-                    <li key={time} className="specific-time">
-                      <p>{dayjs(time).format("HH:mm")}</p>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-            <AddTimes
-              initialValues={times}
-              updateDateTimes={(selectedTimes) =>
-                updateDateTimes(dateKey, selectedTimes)
-              }
-            />
-          </li>
-        ))}
+        {Object.entries(groupedTimeByDateKey.availableDates)
+          .sort(([dateKeyA], [dateKeyB]) => (dateKeyA < dateKeyB ? -1 : 1))
+          .map(([dateKey, times]) => (
+            <li key={dateKey} className="specific-date">
+              <div className="label">
+                <p>{dateKey}</p>
+                {times.length === 0 ? (
+                  "время не указано"
+                ) : (
+                  <ul className="times">
+                    {times.sort().map((time) => (
+                      <li key={time} className="specific-time">
+                        <p>{dayjs(time).format("HH:mm")}</p>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+              <AddTimes
+                initialValues={times}
+                updateDateTimes={(selectedTimes) =>
+                  updateDateTimes(dateKey, selectedTimes)
+                }
+              />
+            </li>
+          ))}
       </ul>
       <div className="controls">
         <Button variant="contained" onClick={() => reset()}>
           Сбросить изменения
         </Button>
-        <Button variant="contained" onClick={() => updateDates()}>
+        <Button
+          variant="contained"
+          onClick={() => {
+            const isSomeDateMissedTimes = Object.values(
+              groupedTimeByDateKey.availableDates
+            ).some((times) => times.length === 0);
+
+            if (isSomeDateMissedTimes) {
+              alert("Укажите время для всех дат");
+              return;
+            }
+
+            updateDates();
+          }}
+        >
           Сохранить изменения
         </Button>
       </div>
@@ -196,7 +217,7 @@ function AddTimes({
           )}
         </IconButton>
         <Popup className="dpopup" id={id} open={open} anchor={popupAnchor}>
-          <PopupBody>
+          <PopupBody translate="no">
             <div className="popup-section">
               {Object.values(editableTimes).length > 0 && (
                 <div>

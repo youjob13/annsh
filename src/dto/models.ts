@@ -1,1 +1,4 @@
-export type DateTimes = Record<string, number[]>;
+export type DateTimes = {
+  nonAvailableDates: number[];
+  availableDates: Record<string, number[]>;
+};

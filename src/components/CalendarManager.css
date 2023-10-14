@@ -9,6 +9,12 @@
   row-gap: 1rem;
 }
 
+@media (max-width: 1024px) {
+  .dates {
+    width: 75%;
+  }
+}
+
 .controls {
   display: flex;
   align-items: center;

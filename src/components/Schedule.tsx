@@ -77,7 +77,6 @@ function ApprovedRequests({
                       <span className="label">
                         Введенная пользователем информация:
                       </span>
-                      <br />
                       <span>{request.userCustomData}</span>
                     </Typography>
                   </div>
@@ -141,7 +140,6 @@ function BookedRequests({
                       <span className="label">
                         Введенная пользователем информация:
                       </span>
-                      <br />
                       <span>{request.userCustomData}</span>
                     </Typography>
                   </div>

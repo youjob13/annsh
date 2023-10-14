@@ -18,51 +18,62 @@ const domain = "https://annushka-tg-bot-3d6cd33c9162.herokuapp.com";
 
 export default function App() {
   // CalendarManager
-  const [dateList, setDates] = useState<number[]>([]);
-  const [groupedTimeByDateKey, setDateTimes] = useState<DTO.DateTimes>({});
-
-  const [nonAvailableDates, setNonAvailableDates] = useState<number[]>([]);
+  const [groupedTimeByDateKey, setDateTimes] = useState<DTO.DateTimes>({
+    nonAvailableDates: [],
+    availableDates: {},
+  });
 
   // todo: useCallback
   const getDates = () => {
     axios.get<DTO.ISchedule[]>(`${domain}/api/schedule`).then(({ data }) => {
-      const dates = data.map(({ timestamp }) =>
-        timestampToSpecificTimeZone(timestamp)
-      );
-
-      setDates(dates);
-      groupTimesByDateKey(dates);
-
       const nonAvailableDates = data
         .filter(({ isBooked }) => isBooked === true)
         .map(({ timestamp }) => timestamp);
-      setNonAvailableDates(nonAvailableDates);
+
+      const availableDates = data
+        .filter(({ isBooked }) => isBooked !== true)
+        .map(({ timestamp }) => timestamp);
+
+      groupTimesByDateKey(nonAvailableDates, availableDates);
     });
   };
 
-  const groupTimesByDateKey = (dates: number[]) => {
-    const groupedTimesByDateKey = dates.reduce<DTO.DateTimes>((acc, date) => {
-      const dateKey = dayjs(date).format("MM/DD/YYYY");
+  const groupTimesByDateKey = (
+    nonAvailableDates: number[],
+    availableDates: number[]
+  ) => {
+    const groupedTimesByDateKey = availableDates.reduce<DTO.DateTimes>(
+      (acc, date) => {
+        const dateKey = dayjs(date).format("MM/DD/YYYY");
 
-      if (acc[dateKey] != null) {
-        acc[dateKey].push(date);
-      } else {
-        acc[dateKey] = [date];
-      }
-      return acc;
-    }, {});
+        if (acc.availableDates[dateKey] != null) {
+          acc.availableDates[dateKey].push(date);
+        } else {
+          acc.availableDates[dateKey] = [date];
+        }
+        return acc;
+      },
+      { nonAvailableDates, availableDates: {} }
+    );
 
     setDateTimes(groupedTimesByDateKey);
   };
 
   const updateDates = async () => {
     try {
-      const dateToUpdate = Object.values(groupedTimeByDateKey)
+      const availableDatesToUpdate = Object.values(
+        groupedTimeByDateKey.availableDates
+      )
         .flat()
         .map(timestampToSpecificTimeZoneAndFormat);
 
+      const nonAvailableDatesToUpdate =
+        groupedTimeByDateKey.nonAvailableDates.map(
+          timestampToSpecificTimeZoneAndFormat
+        );
+
       await axios.post(`${domain}/api/schedule`, {
-        dates: dateToUpdate,
+        dates: [...availableDatesToUpdate, ...nonAvailableDatesToUpdate],
       });
       getAvailableDates();
     } catch (error) {
@@ -139,13 +150,10 @@ export default function App() {
     <>
       <div className="customBody">
         <CalendarManager
-          dateList={dateList}
-          nonAvailableDates={nonAvailableDates}
           groupedTimeByDateKey={groupedTimeByDateKey}
           getDates={getDates}
           setDateTimes={setDateTimes}
           groupTimesByDateKey={groupTimesByDateKey}
-          setDates={setDates}
           updateDates={updateDates}
         />
         <div className="settings">
