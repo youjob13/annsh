@@ -1,4 +1,4 @@
 export type DateTimes = {
-  nonAvailableDates: number[];
+  nonAvailableDates: Record<string, number[]>;
   availableDates: Record<string, number[]>;
 };

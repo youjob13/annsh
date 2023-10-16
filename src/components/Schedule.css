@@ -31,3 +31,9 @@ span {
 .label {
   font-weight: 600;
 }
+
+.resolution-controls {
+  display: flex;
+  flex-direction: column;
+  row-gap: 6px;
+}

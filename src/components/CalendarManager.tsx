@@ -42,13 +42,15 @@ export default function CalendarManager({
   };
 
   const updateDateTimes = (dateKey: string, selectedTimes: number[]) => {
-    setDateTimes((prev) => ({
-      nonAvailableDates: prev.nonAvailableDates,
-      availableDates: {
-        ...prev.availableDates,
-        [dateKey]: Array.from(new Set(selectedTimes)),
-      },
-    }));
+    setDateTimes((prev) => {
+      return {
+        nonAvailableDates: prev.nonAvailableDates,
+        availableDates: {
+          ...prev.availableDates,
+          [dateKey]: Array.from(new Set(selectedTimes)),
+        },
+      };
+    });
   };
 
   return (
@@ -58,8 +60,11 @@ export default function CalendarManager({
         format="MM/DD/YYYY HH:mm"
         ref={calendarRef}
         mapDays={(day) => {
+          const nonAvailableDates = Object.values(
+            groupedTimeByDateKey.nonAvailableDates
+          ).flat();
           if (
-            groupedTimeByDateKey.nonAvailableDates.some((date) =>
+            nonAvailableDates.some((date) =>
               dayjs(date).isSame(dayjs(day.date.toDate()), "day")
             )
           ) {
@@ -75,49 +80,98 @@ export default function CalendarManager({
           return {};
         }}
         value={[
-          ...groupedTimeByDateKey.nonAvailableDates,
+          ...Object.values(groupedTimeByDateKey.nonAvailableDates).flat(),
           ...Object.values(groupedTimeByDateKey.availableDates).flat(),
         ]}
         // @ts-ignore
         onChange={(dates: DateObject[]) => {
           if (dates) {
+            const nonAvailableDates = Object.values(
+              groupedTimeByDateKey.nonAvailableDates
+            ).flat();
             const availableDates = dates.filter(
-              (date) => !groupedTimeByDateKey.nonAvailableDates.includes(+date)
+              (date) => !nonAvailableDates.includes(+date)
             );
-            groupTimesByDateKey(
-              groupedTimeByDateKey.nonAvailableDates,
-              availableDates
-            );
+            groupTimesByDateKey(nonAvailableDates, availableDates);
           }
         }}
       />
       <ul className="dates">
-        {Object.entries(groupedTimeByDateKey.availableDates)
-          .sort(([dateKeyA], [dateKeyB]) => (dateKeyA < dateKeyB ? -1 : 1))
-          .map(([dateKey, times]) => (
-            <li key={dateKey} className="specific-date">
-              <div className="label">
-                <p>{dateKey}</p>
-                {times.length === 0 ? (
-                  "время не указано"
-                ) : (
-                  <ul className="times">
-                    {times.sort().map((time) => (
-                      <li key={time} className="specific-time">
-                        <p>{dayjs(time).format("HH:mm")}</p>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-              <AddTimes
-                initialValues={times}
-                updateDateTimes={(selectedTimes) =>
-                  updateDateTimes(dateKey, selectedTimes)
+        {Object.entries(
+          (
+            [
+              ...Object.entries(groupedTimeByDateKey.availableDates).map(
+                ([dateKey, times]) => {
+                  return [dateKey, times.sort(), "available"];
                 }
-              />
-            </li>
-          ))}
+              ),
+              ...Object.entries(groupedTimeByDateKey.nonAvailableDates).map(
+                ([dateKey, times]) => {
+                  return [dateKey, times.sort(), "nonAvailable"];
+                }
+              ),
+            ].sort(([dateKeyA], [dateKeyB]) =>
+              dateKeyA < dateKeyB ? -1 : 1
+            ) as [string, number[], string][]
+          ).reduce<
+            Record<
+              string,
+              Record<string /* "isAvailable" | "isNonAvailable" */, number[]>
+            >
+          >((acc, [dateKey, times, isAvailable]) => {
+            if (acc[dateKey] == null) {
+              acc[dateKey] = { isNonAvailable: [], isAvailable: [] };
+            }
+            if (isAvailable === "available") {
+              acc[dateKey].isAvailable = times;
+            } else {
+              acc[dateKey].isNonAvailable = times;
+            }
+            return acc;
+          }, {})
+        ).map(([dateKey, obj]) => (
+          <li key={uuidv4()} className="specific-date">
+            <div className="label">
+              <p>{dateKey}</p>
+              {Object.entries(obj).map(
+                ([isAvailable, times]) =>
+                  times.length !== 0 && (
+                    <ul key={isAvailable} className="times">
+                      {isAvailable === "isAvailable" &&
+                        times.map((time) => (
+                          <li
+                            key={time + "isAvailable"}
+                            className="specific-time"
+                          >
+                            <p>{dayjs(time).format("HH:mm")}</p>
+                          </li>
+                        ))}
+                      {isAvailable === "isNonAvailable" &&
+                        times.map((time) => (
+                          <li
+                            key={time + "isNonAvailable"}
+                            className="specific-time nonavailable"
+                          >
+                            <p>{dayjs(time).format("HH:mm")}</p>
+                          </li>
+                        ))}
+                    </ul>
+                  )
+              )}
+            </div>
+            {`${JSON.stringify(+new Date(dateKey))}`}
+            <AddTimes
+              initialValues={
+                obj["isAvailable"].length > 0
+                  ? obj["isAvailable"]
+                  : [+new Date(dateKey)]
+              }
+              updateDateTimes={(selectedTimes) =>
+                updateDateTimes(dateKey, selectedTimes)
+              }
+            />
+          </li>
+        ))}
       </ul>
       <div className="controls">
         <Button variant="contained" onClick={() => reset()}>
@@ -130,7 +184,11 @@ export default function CalendarManager({
               groupedTimeByDateKey.availableDates
             ).some((times) => times.length === 0);
 
-            if (isSomeDateMissedTimes) {
+            const isSomeNonAvailableDateMissedTimes = Object.values(
+              groupedTimeByDateKey.nonAvailableDates
+            ).some((times) => times.length === 0);
+
+            if (isSomeDateMissedTimes && isSomeNonAvailableDateMissedTimes) {
               alert("Укажите время для всех дат");
               return;
             }

@@ -19,7 +19,7 @@ const domain = "https://annushka-tg-bot-3d6cd33c9162.herokuapp.com";
 export default function App() {
   // CalendarManager
   const [groupedTimeByDateKey, setDateTimes] = useState<DTO.DateTimes>({
-    nonAvailableDates: [],
+    nonAvailableDates: {},
     availableDates: {},
   });
 
@@ -42,19 +42,36 @@ export default function App() {
     nonAvailableDates: number[],
     availableDates: number[]
   ) => {
-    const groupedTimesByDateKey = availableDates.reduce<DTO.DateTimes>(
-      (acc, date) => {
-        const dateKey = dayjs(date).format("MM/DD/YYYY");
+    const groupedAvailableDatesByDateKey = availableDates.reduce<
+      DTO.DateTimes["availableDates"]
+    >((acc, date) => {
+      const dateKey = dayjs(date).format("MM/DD/YYYY");
 
-        if (acc.availableDates[dateKey] != null) {
-          acc.availableDates[dateKey].push(date);
-        } else {
-          acc.availableDates[dateKey] = [date];
-        }
-        return acc;
-      },
-      { nonAvailableDates, availableDates: {} }
-    );
+      if (acc[dateKey] != null) {
+        acc[dateKey].push(date);
+      } else {
+        acc[dateKey] = [date];
+      }
+      return acc;
+    }, {});
+
+    const groupedNonAvailableDatesByDateKey = nonAvailableDates.reduce<
+      DTO.DateTimes["nonAvailableDates"]
+    >((acc, date) => {
+      const dateKey = dayjs(date).format("MM/DD/YYYY");
+
+      if (acc[dateKey] != null) {
+        acc[dateKey].push(date);
+      } else {
+        acc[dateKey] = [date];
+      }
+      return acc;
+    }, {});
+
+    const groupedTimesByDateKey: DTO.DateTimes = {
+      availableDates: groupedAvailableDatesByDateKey,
+      nonAvailableDates: groupedNonAvailableDatesByDateKey,
+    };
 
     setDateTimes(groupedTimesByDateKey);
   };
@@ -67,10 +84,11 @@ export default function App() {
         .flat()
         .map(timestampToSpecificTimeZoneAndFormat);
 
-      const nonAvailableDatesToUpdate =
-        groupedTimeByDateKey.nonAvailableDates.map(
-          timestampToSpecificTimeZoneAndFormat
-        );
+      const nonAvailableDatesToUpdate = Object.values(
+        groupedTimeByDateKey.nonAvailableDates
+      )
+        .flat()
+        .map(timestampToSpecificTimeZoneAndFormat);
 
       await axios.post(`${domain}/api/schedule`, {
         dates: [...availableDatesToUpdate, ...nonAvailableDatesToUpdate],

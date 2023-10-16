@@ -22,6 +22,10 @@
   column-gap: 10px;
 }
 
+.specific-time.nonavailable {
+  background-color: #f44336;
+}
+
 .specific-date {
   display: flex;
   align-items: center;

@@ -80,13 +80,15 @@ function ApprovedRequests({
                       <span>{request.userCustomData}</span>
                     </Typography>
                   </div>
-                  <Button
-                    aria-label="add"
-                    variant="contained"
-                    onClick={() => cancelRequest(request)}
-                  >
-                    Отменить запись
-                  </Button>
+                  <div className="resolution-controls">
+                    <Button
+                      aria-label="add"
+                      variant="contained"
+                      onClick={() => cancelRequest(request)}
+                    >
+                      Отменить запись
+                    </Button>
+                  </div>
                 </li>
               ))
             )}
