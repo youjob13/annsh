@@ -159,7 +159,6 @@ export default function CalendarManager({
                   )
               )}
             </div>
-            {`${JSON.stringify(+new Date(dateKey))}`}
             <AddTimes
               initialValues={
                 obj["isAvailable"].length > 0
