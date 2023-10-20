@@ -50,6 +50,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+/**
+ * @license bcrypt.js (c) 2013 Daniel Wirtz <dcode@dcode.io>
+ * Released under the Apache License, Version 2.0
+ * see: https://github.com/dcodeIO/bcrypt.js for details
+ */
+
 /** @license React v16.13.1
  * react-is.production.min.js
  *
