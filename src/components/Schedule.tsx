@@ -7,7 +7,10 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Button from "@mui/material/Button";
 import * as DTO from "../dto";
 import "./Schedule.css";
-import { timestampToSpecificTimeZoneAndFormat } from "../utils";
+import {
+  timestampToSpecificTimeZoneAndFormat,
+  timestampToSpecificTimeZoneAndReadable,
+} from "../utils";
 
 export default function Schedule({
   availableDates,
@@ -62,7 +65,7 @@ function ApprovedRequests({
                     <Typography fontSize={16} variant="h6" component="div">
                       <span className="label">Дата: </span>
                       <span>
-                        {timestampToSpecificTimeZoneAndFormat(request.date)}
+                        {timestampToSpecificTimeZoneAndReadable(request.date)}
                       </span>
                     </Typography>
                     <Typography fontSize={16} variant="h6" component="div">
@@ -127,7 +130,7 @@ function BookedRequests({
                     <Typography fontSize={16} variant="h6" component="div">
                       <span className="label">Дата: </span>
                       <span>
-                        {timestampToSpecificTimeZoneAndFormat(request.date)}
+                        {timestampToSpecificTimeZoneAndReadable(request.date)}
                       </span>
                     </Typography>
                     <Typography fontSize={16} variant="h6" component="div">
@@ -175,7 +178,7 @@ function AvailableDates({ availableDates }: { availableDates: number[] }) {
             ) : (
               availableDates.map((value, index) => (
                 <li key={index}>
-                  {timestampToSpecificTimeZoneAndFormat(value)}
+                  {timestampToSpecificTimeZoneAndReadable(value)}
                 </li>
               ))
             )}

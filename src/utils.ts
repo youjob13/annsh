@@ -7,13 +7,16 @@ export const timestampToSpecificTimeZone = (timestamp: number) => {
 };
 
 export const timestampToSpecificTimeZoneAndFormat = (timestamp: number) => {
-  return DateTime.fromJSDate(new Date(timestamp), {
-    zone: "Europe/Berlin",
-  }).toFormat("yyyy-LL-dd HH:mm");
+  return DateTime.fromJSDate(
+    new Date(timestamp)
+    // {
+    // zone: "Europe/Berlin",
+    // }
+  ).toFormat("yyyy-LL-dd HH:mm");
 };
 
 export const timestampToSpecificTimeZoneAndReadable = (timestamp: number) => {
-  return DateTime.fromJSDate(new Date(timestamp), {
-    zone: "Europe/Berlin",
-  }).toFormat("ccc dd.LL.yyyy HH:mm");
+  return DateTime.fromJSDate(new Date(timestamp)).toFormat(
+    "ccc dd.LL.yyyy HH:mm"
+  );
 };

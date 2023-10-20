@@ -132,32 +132,42 @@ export default function CalendarManager({
         ).map(([dateKey, obj]) => (
           <li key={uuidv4()} className="specific-date">
             <div className="label">
-              <p>{dateKey}</p>
-              {Object.entries(obj).map(
-                ([isAvailable, times]) =>
-                  times.length !== 0 && (
-                    <ul key={isAvailable} className="times">
-                      {isAvailable === "isAvailable" &&
-                        times.map((time) => (
-                          <li
-                            key={time + "isAvailable"}
-                            className="specific-time"
-                          >
-                            <p>{dayjs(time).format("HH:mm")}</p>
-                          </li>
-                        ))}
-                      {isAvailable === "isNonAvailable" &&
-                        times.map((time) => (
-                          <li
-                            key={time + "isNonAvailable"}
-                            className="specific-time nonavailable"
-                          >
-                            <p>{dayjs(time).format("HH:mm")}</p>
-                          </li>
-                        ))}
-                    </ul>
-                  )
-              )}
+              <div>
+                <span>Дата: </span>
+                <p>{dateKey}</p>
+              </div>
+              <div>
+                <span>Время: </span>
+                {obj["isAvailable"].length === 0 &&
+                  obj["isNonAvailable"].length === 0 &&
+                  `Нет выбранного времени 
+                  на текущую дату`}
+                {Object.entries(obj).map(
+                  ([isAvailable, times]) =>
+                    times.length !== 0 && (
+                      <ul key={isAvailable} className="times">
+                        {isAvailable === "isAvailable" &&
+                          times.map((time) => (
+                            <li
+                              key={time + "isAvailable"}
+                              className="specific-time"
+                            >
+                              <p>{dayjs(time).format("HH:mm")}</p>
+                            </li>
+                          ))}
+                        {isAvailable === "isNonAvailable" &&
+                          times.map((time) => (
+                            <li
+                              key={time + "isNonAvailable"}
+                              className="specific-time nonavailable"
+                            >
+                              <p>{dayjs(time).format("HH:mm")}</p>
+                            </li>
+                          ))}
+                      </ul>
+                    )
+                )}
+              </div>
             </div>
             <AddTimes
               initialValues={

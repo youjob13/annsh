@@ -9,6 +9,10 @@
   row-gap: 1rem;
 }
 
+.dates {
+  max-width: 16rem;
+}
+
 @media (max-width: 1024px) {
   .dates {
     width: 75%;

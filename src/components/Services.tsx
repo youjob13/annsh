@@ -11,6 +11,7 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { domain } from "../App";
 
 type INewServiceForm = Record<"key" | "name", string>;
 
@@ -20,9 +21,7 @@ export default function Services() {
   React.useEffect(() => {
     try {
       axios
-        .get<DTO.IService[]>(
-          "https://annushka-tg-bot-3d6cd33c9162.herokuapp.com/api/services"
-        )
+        .get<DTO.IService[]>(`${domain}/api/services`)
         .then(({ data }) => setServices(data));
     } catch (error) {
       console.error("error", error);
@@ -31,12 +30,9 @@ export default function Services() {
 
   const saveUpdatedServices = async () => {
     try {
-      await axios.post(
-        "https://annushka-tg-bot-3d6cd33c9162.herokuapp.com/api/services",
-        {
-          services,
-        }
-      );
+      await axios.post(`${domain}/api/services`, {
+        services,
+      });
     } catch (error) {
       console.error("error", error);
     }
