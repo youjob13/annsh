@@ -34,6 +34,16 @@ span {
 
 .resolution-controls {
   display: flex;
+  align-items: flex-end;
   flex-direction: column;
   row-gap: 6px;
+}
+
+@media (max-width: 1024px) {
+  .date-item {
+    display: flex;
+    flex-direction: column;
+    row-gap: 10px;
+    padding-bottom: 10px;
+  }
 }

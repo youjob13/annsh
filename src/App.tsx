@@ -167,13 +167,16 @@ export default function App() {
   return (
     <>
       <div className="customBody">
-        <CalendarManager
-          groupedTimeByDateKey={groupedTimeByDateKey}
-          getDates={getDates}
-          setDateTimes={setDateTimes}
-          groupTimesByDateKey={groupTimesByDateKey}
-          updateDates={updateDates}
-        />
+        <div className="instructions">
+          <a
+            className="link"
+            target="_blank"
+            rel="noreferrer"
+            href="https://github.com/youjob13/annsh/blob/master/README.md"
+          >
+            🔗Инструкция
+          </a>
+        </div>
         <div className="settings">
           <Services />
           <Schedule
@@ -183,6 +186,13 @@ export default function App() {
             bookedRequests={bookedRequests}
           />
         </div>
+        <CalendarManager
+          groupedTimeByDateKey={groupedTimeByDateKey}
+          getDates={getDates}
+          setDateTimes={setDateTimes}
+          groupTimesByDateKey={groupTimesByDateKey}
+          updateDates={updateDates}
+        />
       </div>
     </>
   );

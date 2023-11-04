@@ -9,13 +9,22 @@
   row-gap: 1rem;
 }
 
+.calendar {
+  display: flex;
+  column-gap: 30px;
+}
+
 .dates {
-  max-width: 16rem;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 @media (max-width: 1024px) {
   .dates {
-    width: 75%;
+    display: block;
+    max-width: 50%;
   }
 }
 
