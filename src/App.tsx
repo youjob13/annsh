@@ -16,6 +16,10 @@ import * as DTO from "./dto";
 
 export const domain = "https://annushka-tg-bot-3d6cd33c9162.herokuapp.com";
 
+const sendLog = (message?: string) => {
+  axios.post(`${domain}/api/logs`, { message });
+};
+
 export default function App() {
   // CalendarManager
   const [groupedTimeByDateKey, setDateTimes] = useState<DTO.DateTimes>({
@@ -101,6 +105,7 @@ export default function App() {
 
   useEffect(() => {
     try {
+      sendLog();
       getDates();
       getAvailableDates();
       getBookedDates();
