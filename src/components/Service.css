@@ -1,3 +1,8 @@
+.accordion {
+  margin: 0 !important;
+}
+
+.address-form,
 .service-form {
   display: flex;
   flex-direction: column;
@@ -7,15 +12,24 @@
   align-items: center;
 }
 
+.address-btn {
+  margin-bottom: 15px !important;
+}
+
 .main-wrapper {
   max-width: 100%;
 }
 
+.address-list,
 .service-list {
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
   row-gap: 1.5rem;
+}
+
+.address-list {
+  width: 90%;
 }
 
 .new-service {

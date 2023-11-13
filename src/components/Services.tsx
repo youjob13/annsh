@@ -17,16 +17,45 @@ type INewServiceForm = Record<"key" | "name", string>;
 
 export default function Services() {
   const [services, setServices] = React.useState<DTO.IService[]>([]);
+  const [messages, setMessages] = React.useState<DTO.IMessagesToUsers[]>([]);
 
   React.useEffect(() => {
     try {
       axios
         .get<DTO.IService[]>(`${domain}/api/services`)
         .then(({ data }) => setServices(data));
+
+      axios
+        .get<DTO.IMessagesToUsers>(`${domain}/api/messagesToUsers/location`)
+        .then(({ data }) => setMessages([data]));
     } catch (error) {
       console.error("error", error);
     }
   }, []);
+
+  const saveUpdatedAddress = async () => {
+    try {
+      axios.put<DTO.IMessagesToUsers>(
+        `${domain}/api/messagesToUsers/location`,
+        messages[0]
+      );
+    } catch (error) {
+      console.error("error", error);
+    }
+  };
+
+  const addressHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const updatedMessages = messages.map((message) => {
+      if (message.key === e.target.name) {
+        return {
+          ...message,
+          value: e.target.value,
+        };
+      }
+      return message;
+    });
+    setMessages(updatedMessages);
+  };
 
   const saveUpdatedServices = async () => {
     try {
@@ -58,6 +87,45 @@ export default function Services() {
 
   return (
     <div className="main-wrapper">
+      <Accordion className="accordion">
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel2a-content"
+          id="panel2a-header"
+        >
+          <Typography component="div">
+            <h4>Редактировать адрес</h4>
+          </Typography>
+        </AccordionSummary>
+        <form
+          className="address-form"
+          onSubmit={(e) => {
+            e.preventDefault();
+            saveUpdatedAddress();
+          }}
+        >
+          <ul className="address-list">
+            {messages.map((value) => (
+              <li key={value.key}>
+                <TextField
+                  name={value.key}
+                  id="outlined-basic"
+                  label="Адрес"
+                  placeholder="Введите адрес"
+                  variant="outlined"
+                  defaultValue={value.value}
+                  onChange={addressHandler}
+                  fullWidth={true}
+                ></TextField>
+              </li>
+            ))}
+          </ul>
+          <Button className="address-btn" type="submit" variant="outlined">
+            Сохранить
+          </Button>
+        </form>
+      </Accordion>
+
       <Accordion>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
