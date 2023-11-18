@@ -23,6 +23,7 @@ import {
   highlightDateCannotBeRemoved,
   isTimeNotSelectedForDate,
 } from "./utils";
+import { sendLog } from "../../helpers";
 
 type GroupedDatesTimeByDateKey = Record<
   DTO.DateType,
@@ -139,6 +140,7 @@ export default function CalendarManager({
         <Button
           variant="contained"
           onClick={() => {
+            sendLog("Batch mode is activated");
             reset();
             updateDatesInBatchMode({
               availableDates: {},
