@@ -159,7 +159,7 @@ export default function CalendarManager({
               className="link"
               target="_blank"
               rel="noreferrer"
-              href="https://github.com/youjob13/annsh/blob/master/README.md"
+              href="https://github.com/youjob13/annsh/tree/master#batch-%D1%80%D0%B5%D0%B6%D0%B8%D0%BC"
             >
               🔗Режим позволяет добавить выбранное время, для всех выбранных дат
               в этом режиме
