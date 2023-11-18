@@ -60,7 +60,7 @@ function ApprovedRequests({
               <span>Нет подтвержденных записей</span>
             ) : (
               approvedRequests.map((request, index) => (
-                <li className="date-item" key={request.requestId + index}>
+                <li className="date-item" key={request.date + index}>
                   <div>
                     <Typography fontSize={16} variant="h6" component="div">
                       <span className="label">Дата: </span>
@@ -125,7 +125,7 @@ function BookedRequests({
               <span>Нет неподтвержденных запросов на запись</span>
             ) : (
               bookedRequests.map((request, index) => (
-                <li className="date-item" key={request.requestId + index}>
+                <li className="date-item" key={request.date + index}>
                   <div>
                     <Typography fontSize={16} variant="h6" component="div">
                       <span className="label">Дата: </span>
@@ -177,7 +177,7 @@ function AvailableDates({ availableDates }: { availableDates: number[] }) {
               <p>Нет свободных дат, добавь новые</p>
             ) : (
               availableDates.map((value, index) => (
-                <li key={index}>
+                <li key={value}>
                   {timestampToSpecificTimeZoneAndReadable(value)}
                 </li>
               ))

@@ -4,7 +4,7 @@ import "./App.css";
 import Schedule from "./components/Schedule";
 
 import Services from "./components/Services";
-import CalendarManager from "./components/CalendarManager";
+import CalendarManager from "./components/CalendarManager/CalendarManager";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import {
@@ -13,6 +13,7 @@ import {
 } from "./utils";
 import dayjs from "dayjs";
 import * as DTO from "./dto";
+import { groupTimeByDateKey } from "./components/CalendarManager/utils";
 
 // export const domain = "http://localhost:4000";
 export const domain = "https://annushka-tg-bot-3d6cd33c9162.herokuapp.com";
@@ -47,36 +48,10 @@ export default function App() {
     nonAvailableDates: number[],
     availableDates: number[]
   ) => {
-    const groupedAvailableDatesByDateKey = availableDates.reduce<
-      DTO.DateTimes["availableDates"]
-    >((acc, date) => {
-      const dateKey = dayjs(date).format("MM/DD/YYYY");
-
-      if (acc[dateKey] != null) {
-        acc[dateKey].push(date);
-      } else {
-        acc[dateKey] = [date];
-      }
-      return acc;
-    }, {});
-
-    const groupedNonAvailableDatesByDateKey = nonAvailableDates.reduce<
-      DTO.DateTimes["nonAvailableDates"]
-    >((acc, date) => {
-      const dateKey = dayjs(date).format("MM/DD/YYYY");
-
-      if (acc[dateKey] != null) {
-        acc[dateKey].push(date);
-      } else {
-        acc[dateKey] = [date];
-      }
-      return acc;
-    }, {});
-
-    const groupedTimesByDateKey: DTO.DateTimes = {
-      availableDates: groupedAvailableDatesByDateKey,
-      nonAvailableDates: groupedNonAvailableDatesByDateKey,
-    };
+    const groupedTimesByDateKey = groupTimeByDateKey(
+      availableDates,
+      nonAvailableDates
+    );
 
     setDateTimes(groupedTimesByDateKey);
   };

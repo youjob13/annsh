@@ -35,7 +35,7 @@
   column-gap: 10px;
 }
 
-.specific-time.nonavailable {
+.specific-time.isNonAvailable {
   background-color: #f44336;
 }
 
@@ -72,4 +72,59 @@
 
 .add-icon.close {
   font-size: 14px;
+}
+
+.dates-in-batch-mode {
+  display: flex;
+  align-items: center;
+  column-gap: 10px;
+}
+
+@media (max-width: 1024px) {
+  .dates-in-batch-mode {
+    display: grid;
+    row-gap: 22px;
+    text-align: center;
+  }
+}
+
+.dates-in-batch-mode .dates {
+  display: flex;
+  max-width: 100%;
+}
+
+/* .component-wrapper {
+  display: grid;
+  grid-template-columns: 5fr 1fr;
+  padding: 0 20px;
+} */
+
+.selected-dates-in-batch-mode .specific-date {
+  display: block;
+}
+
+.batch-time {
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.batch-time .icon-btn:hover {
+  background-color: inherit;
+}
+
+.batch-mode-title {
+  text-align: center;
+}
+
+.link {
+  font-size: 1em;
+  font-weight: 500;
+  font-family: sans-serif;
+  text-decoration: none;
+  color: #fff;
+}
+
+.link:hover {
+  color: rgb(108, 148, 223);
 }

@@ -5,7 +5,6 @@ export interface IRequest {
   serviceType: IService["key"];
   date: number;
   isApproved: boolean;
-  requestId: string;
   username: string | undefined;
   userFullName: string;
   userCustomData?: string;
