@@ -47,3 +47,9 @@ span {
     padding-bottom: 10px;
   }
 }
+
+.sorting {
+  display: flex;
+  align-items: center;
+  column-gap: 15px;
+}
