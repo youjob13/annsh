@@ -25,7 +25,7 @@
   text-align: center;
 }
 
-.instructions .link {
+.instructions .link-instruction {
   font-size: 1em;
   font-weight: 500;
   font-family: sans-serif;
@@ -33,6 +33,6 @@
   color: #fff;
 }
 
-.instructions .link:hover {
+.instructions .link-instruction:hover {
   color: rgb(108, 148, 223);
 }

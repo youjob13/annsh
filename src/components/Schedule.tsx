@@ -29,6 +29,10 @@ enum SortOrder {
   DESC,
 }
 
+function getTelegramUsernameLink(username: string) {
+  return `https://t.me/${username}`;
+}
+
 function sortList<TList, TSortBy>(
   list: TList[],
   sortBy: TSortBy,
@@ -118,7 +122,18 @@ function ApprovedRequests({
                       </Typography>
                       <Typography fontSize={16} variant="h6" component="div">
                         <span className="label">Telegram username: </span>{" "}
-                        <span>{request.username}</span>
+                        {request.username != null ? (
+                          <a
+                            className="link"
+                            target="_blank"
+                            href={getTelegramUsernameLink(request.username)}
+                            rel="noreferrer"
+                          >
+                            {request.username}
+                          </a>
+                        ) : (
+                          <span>У пользователя отсутсвует username</span>
+                        )}
                       </Typography>
                       <Typography fontSize={16} variant="h6" component="div">
                         <span className="label">Telegram fullname: </span>{" "}
@@ -194,7 +209,18 @@ function BookedRequests({
                       </Typography>
                       <Typography fontSize={16} variant="h6" component="div">
                         <span className="label">Telegram username: </span>{" "}
-                        <span>{request.username}</span>
+                        {request.username != null ? (
+                          <a
+                            className="link"
+                            target="_blank"
+                            href={getTelegramUsernameLink(request.username)}
+                            rel="noreferrer"
+                          >
+                            {request.username}
+                          </a>
+                        ) : (
+                          <span>У пользователя отсутсвует username</span>
+                        )}
                       </Typography>
                       <Typography fontSize={16} variant="h6" component="div">
                         <span className="label">Telegram fullname: </span>{" "}

@@ -144,7 +144,7 @@ export default function App() {
       <div className="customBody">
         <div className="instructions">
           <a
-            className="link"
+            className="link-instruction"
             target="_blank"
             rel="noreferrer"
             href="https://github.com/youjob13/annsh/blob/master/README.md"

@@ -53,3 +53,15 @@ span {
   align-items: center;
   column-gap: 15px;
 }
+
+.link {
+  font-size: 1em !important;
+  font-weight: 500 !important;
+  font-family: sans-serif !important;
+  text-decoration: none !important;
+  color: rgb(12, 49, 170) !important;
+}
+
+.link:hover {
+  color: rgb(108, 148, 223) !important;
+}
