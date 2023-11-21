@@ -15,8 +15,13 @@ import { domain } from "../helpers";
 
 type INewServiceForm = Record<"key" | "name", string>;
 
-export default function Services() {
-  const [services, setServices] = React.useState<DTO.IService[]>([]);
+export default function Services({
+  services,
+  setServices,
+}: {
+  services: DTO.IService[];
+  setServices: React.Dispatch<React.SetStateAction<DTO.IService[]>>;
+}) {
   const [messages, setMessages] = React.useState<DTO.IMessagesToUsers[]>([]);
 
   React.useEffect(() => {

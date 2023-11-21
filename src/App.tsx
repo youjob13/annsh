@@ -17,6 +17,9 @@ import { groupTimeByDateKey } from "./components/CalendarManager/utils";
 import { domain, sendLog } from "./helpers";
 
 export default function App() {
+  // Services
+  const [services, setServices] = useState<DTO.IService[]>([]);
+
   // CalendarManager
   const [groupedTimeByDateKey, setDateTimes] = useState<DTO.DateTimes>({
     nonAvailableDates: {},
@@ -153,8 +156,9 @@ export default function App() {
           </a>
         </div>
         <div className="settings">
-          <Services />
+          <Services services={services} setServices={setServices} />
           <Schedule
+            services={services}
             cancelRequest={cancelRequest}
             availableDates={availableDates}
             approvedRequests={approvedRequests}

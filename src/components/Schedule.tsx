@@ -59,16 +59,26 @@ export default function Schedule({
   approvedRequests,
   bookedRequests,
   cancelRequest,
+  services,
 }: {
   availableDates: number[];
   approvedRequests: DTO.IRequest[];
   bookedRequests: DTO.IRequest[];
   cancelRequest: (request: DTO.IRequest) => void;
+  services: DTO.IService[];
 }) {
+  const servicesMap = services.reduce<Record<string, string>>(
+    (acc, service) => ({ ...acc, [service.key]: service.name }),
+    {}
+  );
   return (
     <div>
-      <BookedRequests bookedRequests={bookedRequests} />
+      <BookedRequests
+        servicesMap={servicesMap}
+        bookedRequests={bookedRequests}
+      />
       <ApprovedRequests
+        servicesMap={servicesMap}
         approvedRequests={approvedRequests}
         cancelRequest={cancelRequest}
       />
@@ -78,9 +88,11 @@ export default function Schedule({
 }
 
 function ApprovedRequests({
+  servicesMap,
   approvedRequests,
   cancelRequest,
 }: {
+  servicesMap: Record<string, string>;
   cancelRequest: (request: DTO.IRequest) => void;
   approvedRequests: DTO.IRequest[];
 }) {
@@ -140,6 +152,10 @@ function ApprovedRequests({
                         <span>{request.userFullName}</span>
                       </Typography>
                       <Typography fontSize={16} variant="h6" component="div">
+                        <span className="label">Выбранная услуга: </span>{" "}
+                        <span>{servicesMap[request.serviceType]}</span>
+                      </Typography>
+                      <Typography fontSize={16} variant="h6" component="div">
                         <span className="label">
                           Введенная пользователем информация:
                         </span>
@@ -167,9 +183,11 @@ function ApprovedRequests({
 }
 
 function BookedRequests({
+  servicesMap,
   bookedRequests,
 }: {
   bookedRequests: DTO.IRequest[];
+  servicesMap: Record<string, string>;
 }) {
   const [sortBy, changeSortBy] = React.useState(SortByField.DATE);
   const [sortOrder, changeSortOrder] = React.useState(SortOrder.ASC);
@@ -225,6 +243,10 @@ function BookedRequests({
                       <Typography fontSize={16} variant="h6" component="div">
                         <span className="label">Telegram fullname: </span>{" "}
                         <span>{request.userFullName}</span>
+                      </Typography>
+                      <Typography fontSize={16} variant="h6" component="div">
+                        <span className="label">Выбранная услуга: </span>{" "}
+                        <span>{servicesMap[request.serviceType]}</span>
                       </Typography>
                       <Typography fontSize={16} variant="h6" component="div">
                         <span className="label">
