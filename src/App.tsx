@@ -11,10 +11,10 @@ import {
   timestampToSpecificTimeZone,
   timestampToSpecificTimeZoneAndFormat,
 } from "./utils";
-import dayjs from "dayjs";
 import * as DTO from "./dto";
 import { groupTimeByDateKey } from "./components/CalendarManager/utils";
 import { domain, sendLog } from "./helpers";
+import { ConfirmationPopup } from "./components/shared/ConfirmationPopup";
 
 export default function App() {
   // Services
@@ -142,8 +142,37 @@ export default function App() {
     }
   };
 
+  // ConfirmationPopup
+  const [popupIsOpen, setPopupIsOpen] = useState(false);
+  const [requestToCancel, setRequestToCancel] = useState<DTO.IRequest | null>(
+    null
+  );
+
+  const onCancelRequest = (request: DTO.IRequest) => {
+    setRequestToCancel(request);
+    setPopupIsOpen(true);
+  };
+
+  const applyCancelRequest = () => {
+    if (requestToCancel != null) {
+      cancelRequest(requestToCancel);
+    }
+    setRequestToCancel(null);
+  };
+
+  const cancelCancelRequest = () => {
+    setRequestToCancel(null);
+  };
+
   return (
     <>
+      <ConfirmationPopup
+        requestToCancel={requestToCancel}
+        popupIsOpen={popupIsOpen}
+        toggleState={setPopupIsOpen}
+        apply={applyCancelRequest}
+        cancel={cancelCancelRequest}
+      />
       <div className="customBody">
         <div className="instructions">
           <a
@@ -159,7 +188,7 @@ export default function App() {
           <Services services={services} setServices={setServices} />
           <Schedule
             services={services}
-            cancelRequest={cancelRequest}
+            cancelRequest={onCancelRequest}
             availableDates={availableDates}
             approvedRequests={approvedRequests}
             bookedRequests={bookedRequests}
