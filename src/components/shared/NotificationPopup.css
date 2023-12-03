@@ -1,0 +1,7 @@
+.notification-popup {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  max-width: fit-content;
+  z-index: 9999;
+}

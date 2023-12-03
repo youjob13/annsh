@@ -7,11 +7,21 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Button from "@mui/material/Button";
 import * as DTO from "../dto";
 import "./Schedule.css";
+import { timestampToSpecificTimeZoneAndReadable } from "../utils";
 import {
-  timestampToSpecificTimeZoneAndFormat,
-  timestampToSpecificTimeZoneAndReadable,
-} from "../utils";
-import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  styled,
+} from "@mui/material";
+import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { Unstable_Popup as Popup } from "@mui/base/Unstable_Popup";
+
+import dayjs, { Dayjs } from "dayjs";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 enum SortByField {
   DATE = "date",
@@ -60,12 +70,14 @@ export default function Schedule({
   bookedRequests,
   cancelRequest,
   services,
+  changeRequestDate,
 }: {
   availableDates: number[];
   approvedRequests: DTO.IRequest[];
   bookedRequests: DTO.IRequest[];
   cancelRequest: (request: DTO.IRequest) => void;
   services: DTO.IService[];
+  changeRequestDate: (request: DTO.IUpdatedRequest) => void;
 }) {
   const servicesMap = services.reduce<Record<string, string>>(
     (acc, service) => ({ ...acc, [service.key]: service.name }),
@@ -81,6 +93,7 @@ export default function Schedule({
         servicesMap={servicesMap}
         approvedRequests={approvedRequests}
         cancelRequest={cancelRequest}
+        changeRequestDate={changeRequestDate}
       />
       <AvailableDates availableDates={availableDates} />
     </div>
@@ -91,13 +104,31 @@ function ApprovedRequests({
   servicesMap,
   approvedRequests,
   cancelRequest,
+  changeRequestDate,
 }: {
   servicesMap: Record<string, string>;
   cancelRequest: (request: DTO.IRequest) => void;
+  changeRequestDate: (request: DTO.IUpdatedRequest) => void;
   approvedRequests: DTO.IRequest[];
 }) {
   const [sortBy, changeSortBy] = React.useState(SortByField.DATE);
   const [sortOrder, changeSortOrder] = React.useState(SortOrder.ASC);
+  const [popupAnchor, setPopupAnchor] = React.useState<null | HTMLElement>(
+    null
+  );
+  const [requestToUpdate, setRequestToUpdate] =
+    React.useState<DTO.IRequest | null>(null);
+
+  const open = Boolean(popupAnchor);
+  const id = open ? "simple-popper" : undefined;
+
+  const togglePopup = (event: React.MouseEvent<HTMLElement>) => {
+    setPopupAnchor(popupAnchor ? null : event.currentTarget);
+  };
+
+  const cancelEditMode = () => {
+    setRequestToUpdate(null);
+  };
 
   return (
     <div>
@@ -163,6 +194,29 @@ function ApprovedRequests({
                       </Typography>
                     </div>
                     <div className="resolution-controls">
+                      <Button
+                        aria-describedby={String(request.date)}
+                        aria-label="add"
+                        variant="contained"
+                        onClick={(event) => {
+                          togglePopup(event);
+                          setRequestToUpdate(request);
+                        }}
+                      >
+                        Изменить дату записи
+                      </Button>
+                      {requestToUpdate && (
+                        <UpdateDate
+                          changeRequestDate={changeRequestDate}
+                          id={id}
+                          open={open}
+                          popupAnchor={popupAnchor}
+                          request={requestToUpdate}
+                          togglePopup={togglePopup}
+                          cancelEditMode={cancelEditMode}
+                        />
+                      )}
+
                       <Button
                         aria-label="add"
                         variant="contained"
@@ -385,3 +439,125 @@ function Sorting({
     </div>
   );
 }
+
+function UpdateDate({
+  changeRequestDate,
+  togglePopup,
+  id,
+  open,
+  popupAnchor,
+  request,
+  cancelEditMode,
+}: {
+  changeRequestDate: (request: DTO.IUpdatedRequest) => void;
+  togglePopup: (event: React.MouseEvent<HTMLElement>) => void;
+  id: string | undefined;
+  open: boolean;
+  popupAnchor: HTMLElement | null;
+  request: DTO.IRequest;
+  cancelEditMode: () => void;
+}) {
+  const [updatedDate, setValue] = React.useState<Dayjs | null>(
+    dayjs(request.date)
+  );
+  const [updatedTime, setUpdatedTime] = React.useState<Dayjs | null>(null);
+
+  const updateEditableTime = (time: dayjs.Dayjs | null) => {
+    if (time == null) {
+      return;
+    }
+    setUpdatedTime(time);
+  };
+
+  const saveUpdatedDate = (request: DTO.IRequest) => {
+    if (updatedTime == null || updatedDate == null) {
+      return;
+    }
+
+    const time = dayjs(updatedTime);
+    const hours = time.hour();
+    const minutes = time.minute();
+    const seconds = time.second();
+
+    const dateToUpdate = updatedDate
+      .hour(hours)
+      .minute(minutes)
+      .second(seconds)
+      .millisecond(0);
+
+    changeRequestDate({ ...request, updatedDate: +dateToUpdate });
+  };
+
+  return (
+    <div>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <Popup className="dpopup" id={id} open={open} anchor={popupAnchor}>
+          <PopupBody translate="no">
+            <DemoContainer components={["DatePicker", "DatePicker"]}>
+              <DatePicker
+                label="Controlled picker"
+                value={updatedDate}
+                onChange={(newValue) => setValue(newValue)}
+              />
+            </DemoContainer>
+            <div className="popup-section">
+              <TimePicker
+                onChange={(times) => updateEditableTime(times)}
+                defaultValue={dayjs(request.date)}
+              />
+            </div>
+
+            <Button
+              aria-describedby={id}
+              type="button"
+              onClick={(event) => {
+                togglePopup(event);
+                cancelEditMode();
+              }}
+            >
+              Отменить
+            </Button>
+            <Button
+              disabled={!updatedDate || !updatedTime}
+              aria-describedby={id}
+              type="button"
+              onClick={(event) => {
+                saveUpdatedDate(request);
+                togglePopup(event);
+              }}
+            >
+              Сохранить
+            </Button>
+          </PopupBody>
+        </Popup>
+      </LocalizationProvider>
+    </div>
+  );
+}
+
+const grey = {
+  50: "#f6f8fa",
+  200: "#d0d7de",
+  500: "#6e7781",
+  700: "#424a53",
+  900: "#24292f",
+};
+
+const PopupBody = styled("div")(
+  ({ theme }) => `
+  width: max-content;
+  padding: 12px 16px;
+  margin: 8px;
+  border-radius: 8px;
+  border: 1px solid ${theme.palette.mode === "dark" ? grey[700] : grey[200]};
+  background-color: ${theme.palette.mode === "dark" ? grey[900] : grey[50]};
+  box-shadow: ${
+    theme.palette.mode === "dark"
+      ? `0px 4px 8px rgb(0 0 0 / 0.7)`
+      : `0px 4px 8px rgb(0 0 0 / 0.1)`
+  };
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.875rem;
+  z-index: 1;
+`
+);

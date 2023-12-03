@@ -157,6 +157,11 @@ export default function CalendarManager({
             <p>
               <strong>Batch Mode</strong>
             </p>
+          </div>
+        )}
+
+        {!isBatchModeActive && (
+          <div className="batch-mode-title">
             <a
               className="link"
               target="_blank"

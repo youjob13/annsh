@@ -15,8 +15,21 @@ import * as DTO from "./dto";
 import { groupTimeByDateKey } from "./components/CalendarManager/utils";
 import { domain, sendLog } from "./helpers";
 import { ConfirmationPopup } from "./components/shared/ConfirmationPopup";
+import BasicAlerts from "./components/shared/NotificationPopup";
+import { v4 as uuidv4 } from "uuid";
 
 export default function App() {
+  // error
+  const [errors, setErrors] = useState<DTO.CustomError[]>([]);
+
+  const updateError = (error: DTO.CustomError) => {
+    setErrors([...errors, error]);
+
+    setTimeout(() => {
+      setErrors((errors) => errors.filter((e) => e.id !== error?.id));
+    }, 5000);
+  };
+
   // Services
   const [services, setServices] = useState<DTO.IService[]>([]);
 
@@ -136,9 +149,12 @@ export default function App() {
           getAvailableDates();
           getBookedDates();
           getApprovedDates();
+        })
+        .catch((error) => {
+          updateError({ ...error, id: uuidv4() });
         });
-    } catch (error) {
-      console.error("error", error);
+    } catch (error: any) {
+      updateError({ ...error, id: uuidv4() });
     }
   };
 
@@ -164,8 +180,30 @@ export default function App() {
     setRequestToCancel(null);
   };
 
+  const changeRequestDate = async (request: DTO.IUpdatedRequest) => {
+    try {
+      axios
+        .put<DTO.IRequest>(
+          `${domain}/api/request/approved/${request.date}`,
+          request
+        )
+        .then(() => {
+          getDates();
+          getAvailableDates();
+          getBookedDates();
+          getApprovedDates();
+        })
+        .catch((error) => {
+          updateError({ ...error, id: uuidv4() });
+        });
+    } catch (error: any) {
+      updateError({ ...error, id: uuidv4() });
+    }
+  };
+
   return (
     <>
+      {errors.length ? <BasicAlerts errors={errors} /> : ""}
       <ConfirmationPopup
         requestToCancel={requestToCancel}
         popupIsOpen={popupIsOpen}
@@ -188,6 +226,7 @@ export default function App() {
           <Services services={services} setServices={setServices} />
           <Schedule
             services={services}
+            changeRequestDate={changeRequestDate}
             cancelRequest={onCancelRequest}
             availableDates={availableDates}
             approvedRequests={approvedRequests}
