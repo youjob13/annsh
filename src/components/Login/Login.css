@@ -1,5 +1,10 @@
 :root {
-  --login-page-bg: #172435;
+  --login-page-bg-night: #172435;
+  --login-page-bg-day: #abe7db;
+  --input-border-day: #ffd387;
+  --input-border-day-focus: #ed991e;
+  --input-border-night: #fd6e72;
+  --input-border-night-focus: #fd6e72;
   --white: #fff;
 }
 
@@ -7,7 +12,7 @@
   position: relative;
   height: 100vh;
   width: 100vw;
-  background-color: var(--login-page-bg);
+  background-color: var(--login-page-bg-night);
   overflow: hidden;
   margin: 0 auto;
   display: flex;
@@ -30,9 +35,9 @@
 
 .login-wrapper .content .form-controls {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   gap: 24px;
-  max-width: 300px;
+  max-width: 350px;
   top: -50px;
   position: relative;
 }
@@ -46,20 +51,49 @@
 }
 
 .login-wrapper .content .input div::before {
-  border-bottom-color: #ffd387;
+  border-bottom-color: var(--input-border-day);
 }
 
 .login-wrapper .content .input div::after {
-  border-bottom-color: #ed991e;
+  border-bottom-color: var(--input-border-day-focus);
 }
 
 .login-wrapper .content button.button {
   background-color: #7c8eaf;
-  min-width: 100px;
+  min-width: 120px;
+  align-self: stretch;
 }
 
 .login-wrapper .content button.button:disabled {
   background-color: #5d6c8a;
+}
+
+.day.login-wrapper {
+  background-color: var(--login-page-bg-day);
+}
+
+.day.login-wrapper .input {
+  background-color: #755261;
+  border-radius: 4px;
+  padding-left: 6px;
+}
+
+.day.login-wrapper .content .input label {
+  color: var(--white);
+  padding-left: 6px;
+}
+
+.day.login-wrapper .content button.button {
+  background-color: #755261;
+}
+
+.day.login-wrapper .content .input div::before {
+  border-bottom-color: var(--input-border-night);
+  opacity: 0.75;
+}
+
+.day.login-wrapper .content .input div::after {
+  border-bottom-color: var(--input-border-night-focus);
 }
 
 @media (max-width: 680px) {
@@ -72,6 +106,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    row-gap: 10px;
   }
 
   .login-wrapper .content .button {
