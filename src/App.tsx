@@ -17,8 +17,44 @@ import { domain, sendLog } from "./helpers";
 import { ConfirmationPopup } from "./components/shared/ConfirmationPopup";
 import BasicAlerts from "./components/shared/NotificationPopup";
 import { v4 as uuidv4 } from "uuid";
+import Login from "./components/Login/Login";
+import { Alert } from "@mui/material";
 
 export default function App() {
+  const [isAuthorized, loginToApp] = useState<boolean>(false);
+  const [isWrongPassword, setWrongPassword] = useState<boolean>(false);
+
+  const authorize = (isPasswordCorrect: boolean) => {
+    if (isPasswordCorrect) {
+      loginToApp(true);
+      setWrongPassword(false);
+    } else {
+      handleWrongPassword();
+    }
+  };
+
+  const handleWrongPassword = () => {
+    if (!isWrongPassword) {
+      setWrongPassword(true);
+      setTimeout(() => {
+        setWrongPassword(false);
+      }, 5000);
+    }
+  };
+
+  return (
+    <>
+      {isWrongPassword && !isAuthorized && (
+        <Alert className="alert" severity="error">
+          Wrong password
+        </Alert>
+      )}
+      {!isAuthorized ? <Login authorize={authorize} /> : <AppContent />}
+    </>
+  );
+}
+
+function AppContent() {
   // error
   const [errors, setErrors] = useState<DTO.CustomError[]>([]);
 

@@ -1,0 +1,81 @@
+:root {
+  --login-page-bg: #172435;
+  --white: #fff;
+}
+
+.login-wrapper {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  background-color: var(--login-page-bg);
+  overflow: hidden;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-wrapper .content {
+  display: flex;
+  flex-direction: column;
+  top: -20%;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-wrapper .content img {
+  width: 100%;
+}
+
+.login-wrapper .content .form-controls {
+  display: flex;
+  align-items: flex-end;
+  gap: 24px;
+  max-width: 300px;
+  top: -50px;
+  position: relative;
+}
+
+.login-wrapper .content .input label {
+  color: var(--white);
+}
+
+.login-wrapper .content .input input {
+  color: var(--white) !important;
+}
+
+.login-wrapper .content .input div::before {
+  border-bottom-color: #ffd387;
+}
+
+.login-wrapper .content .input div::after {
+  border-bottom-color: #ed991e;
+}
+
+.login-wrapper .content button.button {
+  background-color: #7c8eaf;
+  min-width: 100px;
+}
+
+.login-wrapper .content button.button:disabled {
+  background-color: #5d6c8a;
+}
+
+@media (max-width: 680px) {
+  .login-wrapper .content {
+    padding-top: 50%;
+  }
+
+  .login-wrapper .content .form-controls {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .login-wrapper .content .button {
+    width: 100%;
+    min-width: none;
+  }
+}
